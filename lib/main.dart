@@ -7,11 +7,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:test_color_filter2/native_widget_example.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WebViewExample()));
 // void main() => runApp(ColorFiltered(colorFilter: ColorFilter.mode(Colors.red, BlendMode.color), child: HelloWorldExample()));
-void main() => runApp(Opacity(child: MaterialApp(home: WebViewExample()), opacity: 0.5));
+// void main() => runApp(Opacity(child: MaterialApp(home: WebViewExample()), opacity: 0.5));
+// void main() => runApp(MaterialApp(home: HelloWorldExample()));
+void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: NativeWidgetExampleApp()));
+
+class NativeWidgetExampleApp extends StatefulWidget {
+  @override
+  NativeWidgetExample createState() => NativeWidgetExample();
+}
 
 class WebViewExample extends StatefulWidget {
   @override
@@ -20,18 +28,28 @@ class WebViewExample extends StatefulWidget {
 
 class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
 
   @override
   Widget build(BuildContext context) {
-      return WebView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Hello!'),
+        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
+        actions: <Widget>[
+          NavigationControls(_controller.future),
+          SampleMenu(_controller.future),
+        ],
+      ),
+      // We're using a Builder here so we have a context that is below the Scaffold
+      // to allow calling Scaffold.of(context) so we can show a snackbar.
+      body: Builder(builder: (BuildContext context) {
+        return WebView(
           initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
           javascriptChannels: <JavascriptChannel>[
             _toasterJavascriptChannel(context),
           ].toSet(),
@@ -51,6 +69,9 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           gestureNavigationEnabled: true,
         );
+      }),
+      floatingActionButton: favoriteButton(),
+    );
   }
 
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
