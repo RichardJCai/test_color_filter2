@@ -13,8 +13,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 // void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WebViewExample()));
 // void main() => runApp(ColorFiltered(colorFilter: ColorFilter.mode(Colors.red, BlendMode.color), child: HelloWorldExample()));
 // void main() => runApp(Opacity(child: MaterialApp(home: WebViewExample()), opacity: 0.5));
-// void main() => runApp(MaterialApp(home: HelloWorldExample()));
-void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: NativeWidgetExampleApp()));
+void main() => runApp(MaterialApp(home: HelloWorldExample()));
+// void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: NativeWidgetExampleApp()));
 
 class NativeWidgetExampleApp extends StatefulWidget {
   @override
@@ -117,6 +117,11 @@ class HelloWorldExample extends StatelessWidget {
         body: Center(
           child: Text('Hello World'),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            print("hello world");
+            }
+          ),
       ),
     );
   }
