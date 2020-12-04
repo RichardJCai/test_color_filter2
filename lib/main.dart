@@ -13,8 +13,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 // void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WebViewExample()));
 // void main() => runApp(ColorFiltered(colorFilter: ColorFilter.mode(Colors.red, BlendMode.color), child: HelloWorldExample()));
 // void main() => runApp(Opacity(child: MaterialApp(home: WebViewExample()), opacity: 0.5));
-void main() => runApp(MaterialApp(home: HelloWorldExample()));
-// void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: NativeWidgetExampleApp()));
+// void main() => runApp(MaterialApp(home: HelloWorldExample()));
+void main() => runApp(MaterialApp(
+    debugShowCheckedModeBanner: false, home: NativeWidgetExampleApp()));
 
 class NativeWidgetExampleApp extends StatefulWidget {
   @override
@@ -117,11 +118,9 @@ class HelloWorldExample extends StatelessWidget {
         body: Center(
           child: Text('Hello World'),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            print("hello world");
-            }
-          ),
+        floatingActionButton: FloatingActionButton(onPressed: () {
+          print("hello world");
+        }),
       ),
     );
   }
@@ -190,8 +189,7 @@ class SampleMenu extends StatelessWidget {
                 break;
             }
           },
-          itemBuilder: (BuildContext context) =>
-          <PopupMenuItem<MenuOptions>>[
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
               child: const Text('Show user agent'),
@@ -227,18 +225,18 @@ class SampleMenu extends StatelessWidget {
     );
   }
 
-  void _onShowUserAgent(WebViewController controller,
-      BuildContext context) async {
+  void _onShowUserAgent(
+      WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
     await controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onListCookies(WebViewController controller,
-      BuildContext context) async {
+  void _onListCookies(
+      WebViewController controller, BuildContext context) async {
     final String cookies =
-    await controller.evaluateJavascript('document.cookie');
+        await controller.evaluateJavascript('document.cookie');
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -283,10 +281,10 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onNavigationDelegateExample(WebViewController controller,
-      BuildContext context) async {
+  void _onNavigationDelegateExample(
+      WebViewController controller, BuildContext context) async {
     final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+        base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
@@ -296,7 +294,7 @@ class SampleMenu extends StatelessWidget {
     }
     final List<String> cookieList = cookies.split(';');
     final Iterable<Text> cookieWidgets =
-    cookieList.map((String cookie) => Text(cookie));
+        cookieList.map((String cookie) => Text(cookie));
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -327,39 +325,39 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoBack()) {
-                  await controller.goBack();
-                } else {
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: Text("No back history item")),
-                  );
-                  return;
-                }
-              },
+                      if (await controller.canGoBack()) {
+                        await controller.goBack();
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(content: Text("No back history item")),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios),
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoForward()) {
-                  await controller.goForward();
-                } else {
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("No forward history item")),
-                  );
-                  return;
-                }
-              },
+                      if (await controller.canGoForward()) {
+                        await controller.goForward();
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("No forward history item")),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.replay),
               onPressed: !webViewReady
                   ? null
                   : () {
-                controller.reload();
-              },
+                      controller.reload();
+                    },
             ),
           ],
         );

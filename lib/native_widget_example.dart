@@ -5,28 +5,62 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+int pvId = 0;
+
+var gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>[
+  new Factory<OneSequenceGestureRecognizer>(
+    () => new EagerGestureRecognizer(),
+  )
+].toSet();
+
+/// Creates the controller and kicks off its initialization.
+MacOSPVController createMacOSPVController(PlatformViewCreationParams params) {
+  final MacOSPVController controller = MacOSPVController(pvId, "idk");
+  controller._initialize().then((_) {
+    params.onPlatformViewCreated(params.id);
+  });
+  return controller;
+}
+
+var platformView = PlatformViewLink(
+  viewType: '<platform-view-type>',
+  onCreatePlatformView: createMacOSPVController, // need a controller.
+  surfaceFactory: (BuildContext context, PlatformViewController controller) {
+    return PlatformViewSurface(
+      gestureRecognizers: gestureRecognizers,
+      controller: controller,
+      hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+    );
+  },
+);
 
 class NativeWidgetExample extends State<StatefulWidget> {
-  final Map<String, dynamic> creationParams = <String, dynamic>{};
+  List<Widget> _widgets = [platformView];
+  String _text = "hello";
+  bool withPv = true;
+
+  void _onPressed() {
+    setState(() {
+      print("pressed");
+      _text = "pressed";
+      if (withPv) {
+        _widgets.removeLast();
+      } else {
+        _widgets.add(platformView);
+      }
+      withPv = !withPv;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    creationParams["offset_x"] = 500;
-    creationParams["offset_y"] = 0;
-    creationParams["width"] = 300;
-    creationParams["height"] = 300;
-
-    var gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>[
-          new Factory<OneSequenceGestureRecognizer>(
-            () => new EagerGestureRecognizer(),
-          )].toSet();
-
-            /// Creates the controller and kicks off its initialization.
-  MacOSPVController createMacOSPVController(PlatformViewCreationParams params) {
-    final MacOSPVController controller = MacOSPVController(1, "idk");
-    controller._initialize().then((_) { params.onPlatformViewCreated(params.id); });
-    return controller;
-  }
+    var button = FlatButton(
+      onPressed: () {
+        _onPressed();
+        pvId += 1;
+      },
+      child: Text(_text),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -35,28 +69,19 @@ class NativeWidgetExample extends State<StatefulWidget> {
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
-
-        return PlatformViewLink(
-       viewType: '<platform-view-type>',
-       onCreatePlatformView: createMacOSPVController, // need a controller.
-       surfaceFactory: (BuildContext context, PlatformViewController controller) {
-        return PlatformViewSurface(
-        gestureRecognizers: gestureRecognizers,            
-        controller: controller,
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-       },
-    );
-    }),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        print("hello world");
-      }
-    ),
+        return GridView.count(
+            primary: false,
+            padding: const EdgeInsets.all(20),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            crossAxisCount: 2,
+            children: <Widget>[
+              button, 
+            ] + _widgets);
+      }),
     );
   }
-  
-}     
+}
 
 class MacOSPVController extends PlatformViewController {
   MacOSPVController(
@@ -84,12 +109,10 @@ class MacOSPVController extends PlatformViewController {
   }
 
   @override
-  Future<void> clearFocus() async {
-  }
+  Future<void> clearFocus() async {}
 
   @override
-  Future<void> dispatchPointerEvent(PointerEvent event) async {
-  }
+  Future<void> dispatchPointerEvent(PointerEvent event) async {}
 
   @override
   Future<void> dispose() async {
