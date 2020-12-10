@@ -7,7 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:test_color_filter2/native_widget_example.dart';
+import 'package:webview_demo/native_widget_example.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WebViewExample()));

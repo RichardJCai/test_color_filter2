@@ -15,7 +15,7 @@ var gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>[
 
 /// Creates the controller and kicks off its initialization.
 MacOSPVController createMacOSPVController(PlatformViewCreationParams params) {
-  final MacOSPVController controller = MacOSPVController(pvId, "idk");
+  final MacOSPVController controller = MacOSPVController(pvId, "webview");
   controller._initialize().then((_) {
     params.onPlatformViewCreated(params.id);
   });
@@ -24,7 +24,7 @@ MacOSPVController createMacOSPVController(PlatformViewCreationParams params) {
 
 var platformView = PlatformViewLink(
   viewType: '<platform-view-type>',
-  onCreatePlatformView: createMacOSPVController, // need a controller.
+  onCreatePlatformView: createMacOSPVController,
   surfaceFactory: (BuildContext context, PlatformViewController controller) {
     return PlatformViewSurface(
       gestureRecognizers: gestureRecognizers,
@@ -36,12 +36,12 @@ var platformView = PlatformViewLink(
 
 class NativeWidgetExample extends State<StatefulWidget> {
   List<Widget> _widgets = [platformView];
-  String _text = "hello";
+  String _text = "hide";
   bool withPv = true;
 
   void _onPressed() {
     setState(() {
-      print("pressed");
+      print("shiow");
       _text = "pressed";
       if (withPv) {
         _widgets.removeLast();
@@ -69,16 +69,21 @@ class NativeWidgetExample extends State<StatefulWidget> {
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
-        return GridView.count(
-            primary: false,
-            padding: const EdgeInsets.all(20),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 2,
-            children: <Widget>[
-              button, 
-            ] + _widgets);
+        return platformView;
+        //   return GridView.count(
+        //       primary: false,
+        //       padding: const EdgeInsets.all(20),
+        //       crossAxisSpacing: 10,
+        //       mainAxisSpacing: 10,
+        //       crossAxisCount: 1,
+        //       children: <Widget>[button]
+        // );
       }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.navigation),
+        backgroundColor: Colors.green,
+      ),
     );
   }
 }
