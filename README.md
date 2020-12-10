@@ -1,16 +1,19 @@
-# test_color_filter2
+# Demo for embedding WKWebView in MacOS Flutter Application
 
-A new Flutter application.
+![image](https://user-images.githubusercontent.com/25163644/101827751-ad634380-3afe-11eb-94a9-c8ac7ecccb07.png)
 
-## Getting Started
+## Instructions
+Checkout my Flutter/engine branch with MacOS Platform view support
+The WKWebView platform view is hardcoded and registered in FlutterEngine.mm
+https://github.com/RichardJCai/engine/tree/webview_demo_12082020
 
-This project is a starting point for a Flutter application.
+Compile the engine and run this app for macOS.
 
-A few resources to get you started if this is your first Flutter project:
+To run the app using the compiled version of the engine
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Compile the engine for macOS (on my branch of the engine webview_demo_12082020) following these steps
+https://github.com/flutter/flutter/wiki/Compiling-the-engine
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Run the webview_demo flutter application:
+`flutter run -d macos --local-engine-src-path /your/path/to/engine/src --local-engine host_debug_unopt`
+
