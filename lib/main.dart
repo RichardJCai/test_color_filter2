@@ -7,11 +7,20 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:webview_demo/native_widget_example.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // void main() => runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WebViewExample()));
 // void main() => runApp(ColorFiltered(colorFilter: ColorFilter.mode(Colors.red, BlendMode.color), child: HelloWorldExample()));
-void main() => runApp(Opacity(child: MaterialApp(home: WebViewExample()), opacity: 0.5));
+// void main() => runApp(Opacity(child: MaterialApp(home: WebViewExample()), opacity: 0.5));
+// void main() => runApp(MaterialApp(home: HelloWorldExample()));
+void main() => runApp(MaterialApp(
+    debugShowCheckedModeBanner: false, home: NativeWidgetExampleApp()));
+
+class NativeWidgetExampleApp extends StatefulWidget {
+  @override
+  NativeWidgetExample createState() => NativeWidgetExample();
+}
 
 class WebViewExample extends StatefulWidget {
   @override
@@ -20,18 +29,28 @@ class WebViewExample extends StatefulWidget {
 
 class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
 
   @override
   Widget build(BuildContext context) {
-      return WebView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Hello!'),
+        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
+        actions: <Widget>[
+          NavigationControls(_controller.future),
+          SampleMenu(_controller.future),
+        ],
+      ),
+      // We're using a Builder here so we have a context that is below the Scaffold
+      // to allow calling Scaffold.of(context) so we can show a snackbar.
+      body: Builder(builder: (BuildContext context) {
+        return WebView(
           initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
           javascriptChannels: <JavascriptChannel>[
             _toasterJavascriptChannel(context),
           ].toSet(),
@@ -51,6 +70,9 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           gestureNavigationEnabled: true,
         );
+      }),
+      floatingActionButton: favoriteButton(),
+    );
   }
 
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
@@ -96,6 +118,9 @@ class HelloWorldExample extends StatelessWidget {
         body: Center(
           child: Text('Hello World'),
         ),
+        floatingActionButton: FloatingActionButton(onPressed: () {
+          print("hello world");
+        }),
       ),
     );
   }
@@ -164,8 +189,7 @@ class SampleMenu extends StatelessWidget {
                 break;
             }
           },
-          itemBuilder: (BuildContext context) =>
-          <PopupMenuItem<MenuOptions>>[
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
               child: const Text('Show user agent'),
@@ -201,18 +225,18 @@ class SampleMenu extends StatelessWidget {
     );
   }
 
-  void _onShowUserAgent(WebViewController controller,
-      BuildContext context) async {
+  void _onShowUserAgent(
+      WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
     await controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onListCookies(WebViewController controller,
-      BuildContext context) async {
+  void _onListCookies(
+      WebViewController controller, BuildContext context) async {
     final String cookies =
-    await controller.evaluateJavascript('document.cookie');
+        await controller.evaluateJavascript('document.cookie');
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -257,10 +281,10 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onNavigationDelegateExample(WebViewController controller,
-      BuildContext context) async {
+  void _onNavigationDelegateExample(
+      WebViewController controller, BuildContext context) async {
     final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+        base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
@@ -270,7 +294,7 @@ class SampleMenu extends StatelessWidget {
     }
     final List<String> cookieList = cookies.split(';');
     final Iterable<Text> cookieWidgets =
-    cookieList.map((String cookie) => Text(cookie));
+        cookieList.map((String cookie) => Text(cookie));
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -301,39 +325,39 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoBack()) {
-                  await controller.goBack();
-                } else {
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: Text("No back history item")),
-                  );
-                  return;
-                }
-              },
+                      if (await controller.canGoBack()) {
+                        await controller.goBack();
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(content: Text("No back history item")),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios),
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoForward()) {
-                  await controller.goForward();
-                } else {
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("No forward history item")),
-                  );
-                  return;
-                }
-              },
+                      if (await controller.canGoForward()) {
+                        await controller.goForward();
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("No forward history item")),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.replay),
               onPressed: !webViewReady
                   ? null
                   : () {
-                controller.reload();
-              },
+                      controller.reload();
+                    },
             ),
           ],
         );
